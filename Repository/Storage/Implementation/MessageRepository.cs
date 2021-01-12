@@ -26,7 +26,7 @@ namespace Repository.Storage.Implementation
 
         public async Task<bool> DeleteAsync(long id)
         {
-            var obj = await _context.Messages.SingleAsync(p => p.Id == id);
+            var obj = await _context.Messages.SingleOrDefaultAsync(p => p.Id == id);
             if (obj is null)
             {
                 return false;
@@ -52,12 +52,11 @@ namespace Repository.Storage.Implementation
             return obj;
         }
 
-        public async Task<Message[]> GetMessagesByIdDialog(int id, int limit, int offset)
+        public async Task<Message[]> GetMessagesByDialogIdAsync(int id, int limit, int offset)
         {
             var messages = await _context.Messages
                 .Include(m => m.UserDialog)
-                    .ThenInclude(u => u.Dialog)
-                .Where(d => d.Id == id)
+                    .ThenInclude(u => u.Dialog.Id == id)
                 .OrderBy(d => d.DateTime)
                 .Skip(offset)
                 .Take(limit)
@@ -65,9 +64,12 @@ namespace Repository.Storage.Implementation
             return messages;            
         }
 
-        public int Get()
+        public async Task<bool> HasUserWithId(int userId, int messId)
         {
-            _context
+            return await _context.Messages
+                .Where(m => m.Id == messId)
+                .Include(m => m.UserDialog.UserId == userId)
+                .AnyAsync();
         }
     }
 }

@@ -8,6 +8,6 @@ namespace Repository.Storage.Interface
 {
     public interface IMessageRepository : IRepository<Message, long>
     {
-        Task<Message[]> GetMessagesByIdDialog(int id, int limit, int offset);
+        Task<Message[]> GetMessagesByDialogIdAsync(int id, int limit, int offset);
     }
 }

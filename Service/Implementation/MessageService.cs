@@ -45,10 +45,10 @@ namespace Service.Implementation
 
         public async Task GetMessagesByDialogId(int id, int limit, int offset = 0)
         {
-            await _messageRepository.GetMessagesByIdDialog(id, offset, limit);
+            await _messageRepository.GetMessagesByDialogIdAsync(id, offset, limit);
         }
 
-        public async Task<Message> GetMessage(long id)
+        public async Task<Message> GetMessageAsync(long id)
         {
             return await _messageRepository.GetAsync(id);
         }

@@ -24,7 +24,7 @@ namespace Service.Implementation
             _mapper = mapper;
         }
 
-        public async Task CreatePrivateDialog(DialogAddDTO dialogDTO)
+        public async Task CreatePrivateDialogAsync(DialogAddDTO dialogDTO)
         {
             if (dialogDTO.IsTeteATete && dialogDTO.UsersId.Count != 2) throw new Exception();
             Dialog dialog = null;
@@ -32,7 +32,7 @@ namespace Service.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task CreateGroupDialog(DialogAddDTO dialogDTO)
+        public async Task CreateGroupDialogAsync(DialogAddDTO dialogDTO)
         {
             Dialog dialog = null;
             _dialogRepository.Add(dialog);
@@ -46,6 +46,7 @@ namespace Service.Implementation
             if (dialog.IsTeteATete ) throw new Exception();
             UserDialog userDialogs = null;
             _dialogRepository.AddUserToDialog(userDialogs);
+            await _context.SaveChangesAsync();
         }
     }
 }

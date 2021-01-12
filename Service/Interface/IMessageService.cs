@@ -9,8 +9,8 @@ namespace Service.Interface
 {
     public interface IMessageService
     {
-        public Task DeleteMessageAsync(MessageGetDTO message);
-        public Task<MessageGetDTO> CreateMessage(MessageGetDTO message);
-        Task<Message> GetMessage(long id);
+        Task DeleteMessageAsync(MessageGetDTO message);
+        Task<MessageGetDTO> CreateMessage(MessageAddDTO messageDTO);
+        Task<Message> GetMessageAsync(long id);
     }
 }

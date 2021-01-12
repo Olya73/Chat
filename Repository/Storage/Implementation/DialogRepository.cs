@@ -25,7 +25,7 @@ namespace Repository.Storage.Implementation
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var obj = await _context.Dialogs.SingleAsync(p => p.Id == id);
+            var obj = await _context.Dialogs.SingleOrDefaultAsync(p => p.Id == id);
             if (obj is null)
             {
                 return false;

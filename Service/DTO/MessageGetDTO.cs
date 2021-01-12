@@ -6,7 +6,8 @@ namespace Service.DTO
 {
     public class MessageGetDTO
     {
-        public DateTime DateTime { get; internal set; }
         public long Id { get; internal set; }
+        public DateTime DateTime { get; internal set; }
+        public string Text { get; set; }
     }
 }
