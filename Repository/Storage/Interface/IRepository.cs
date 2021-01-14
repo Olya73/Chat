@@ -10,7 +10,7 @@ namespace Repository.Storage.Interface
         Task<bool> DeleteAsync(TId id);
         Task<T> GetAsync(TId id);
         Task<IEnumerable<T>> GetAllAsync();
-        TId Add(T obj);
+        void Add(T obj);
         T Update(T obj);
     }
 }

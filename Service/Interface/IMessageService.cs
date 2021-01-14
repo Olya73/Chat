@@ -1,5 +1,6 @@
 ﻿using DataAccess.Model;
 using Service.DTO;
+using Service.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,8 +10,9 @@ namespace Service.Interface
 {
     public interface IMessageService
     {
-        Task DeleteMessageAsync(MessageGetDTO message);
-        Task<MessageGetDTO> CreateMessage(MessageAddDTO messageDTO);
-        Task<Message> GetMessageAsync(long id);
+        Task<ServiceResponse<MessageGetDTO>> CreateMessageAsync(MessageAddDTO messageDTO);
+        Task<ServiceResponse<bool>> DeleteMessageAsync(MessageGetDTO message);
+        Task<ServiceResponse<MessageGetDTO[]>> GetMessagesByDialogId(int id, int limit = 50, int offset = 0);
+        Task<ServiceResponse<MessageGetDTO>> GetMessageAsync(long id);
     }
 }

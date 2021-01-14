@@ -24,33 +24,97 @@ namespace Service.Implementation
             _mapper = mapper;
         }
 
-        public async Task<MessageGetDTO> CreateMessage(MessageAddDTO messageDTO)
+        public async Task<ServiceResponse<MessageGetDTO>> CreateMessageAsync(MessageAddDTO messageDTO)
         {
-            Message message = new Message()
+            ServiceResponse<MessageGetDTO> serviceResponse = new ServiceResponse<MessageGetDTO>();
+
+            try
             {
-                DateTime = messageDTO.DateTime,
-            };
-            long id = _messageRepository.Add(message);
-            
-            await _context.SaveChangesAsync();
-            return message;
+                UserDialog userDialog = await _messageRepository.GetUserDialogByFKIdAsync(messageDTO.UserId, messageDTO.DialogId);
+                if (userDialog == null)
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Нет доступа";
+                    return serviceResponse;
+                }
+                Message message = new Message()
+                {
+                    UserId = messageDTO.UserId,
+                    Text = messageDTO.Text,
+                    UserDialog = userDialog
+                };
+                _messageRepository.Add(message);
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = _mapper.Map<MessageGetDTO>(messageDTO);
+                serviceResponse.Data.Id = message.Id;
+            }
+            catch(Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+                return serviceResponse;
+            }
+
+            return serviceResponse;
         }
 
-        public async Task DeleteMessageAsync(MessageGetDTO message)
+        public async Task<ServiceResponse<bool>> DeleteMessageAsync(MessageGetDTO message)
         {
-            if ((DateTime.UtcNow - message.DateTime).Days < 1)
+            ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
+
+            try
+            {
+                if ((DateTime.UtcNow.Day - message.DateTime.Day) >= 1)
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Срок истек";
+                    return serviceResponse;
+                }
+                if (!await _messageRepository.HasUserWithId(message.UserId, message.Id))
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Нет доступа";
+                    return serviceResponse;
+                }
                 if (await _messageRepository.DeleteAsync(message.Id))
+                {
                     await _context.SaveChangesAsync();
+                    serviceResponse.Data = true;
+                }                    
+                else
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Сообщение не найдено";
+                    return serviceResponse;
+                }
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+                return serviceResponse;
+            }
+
+            return serviceResponse;
         }
 
-        public async Task GetMessagesByDialogId(int id, int limit, int offset = 0)
+        public async Task<ServiceResponse<MessageGetDTO[]>> GetMessagesByDialogId(int id, int limit = 50, int offset = 0)
         {
-            await _messageRepository.GetMessagesByDialogIdAsync(id, offset, limit);
+            ServiceResponse<MessageGetDTO[]> serviceResponse = new ServiceResponse<MessageGetDTO[]>();
+
+            IEnumerable<Message> messages = await _messageRepository.GetMessagesByDialogIdAsync(id, limit, offset);
+            serviceResponse.Data = _mapper.Map<MessageGetDTO[]>(messages);
+
+            return serviceResponse;
         }
 
-        public async Task<Message> GetMessageAsync(long id)
+        public async Task<ServiceResponse<MessageGetDTO>> GetMessageAsync(long id)
         {
-            return await _messageRepository.GetAsync(id);
+            ServiceResponse<MessageGetDTO> serviceResponse = new ServiceResponse<MessageGetDTO>();
+
+            serviceResponse.Data = _mapper.Map<MessageGetDTO>(await _messageRepository.GetAsync(id));
+
+            return serviceResponse;
         }
     }
 }

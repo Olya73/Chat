@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Repository.Storage.Implementation
 {
-    class MessageRepository : IMessageRepository
+    public class MessageRepository : IMessageRepository
     {
         private readonly ChatNpgSQLContext _context;
 
@@ -18,10 +18,9 @@ namespace Repository.Storage.Implementation
             _context = context;
         }
 
-        public long Add(Message obj)
+        public void Add(Message obj)
         {
             _context.Messages.Add(obj);
-            return obj.Id;
         }
 
         public async Task<bool> DeleteAsync(long id)
@@ -43,7 +42,7 @@ namespace Repository.Storage.Implementation
 
         public async Task<Message> GetAsync(long id)
         {
-            return await _context.Messages.SingleOrDefaultAsync(p => p.Id == id);
+            return await _context.Messages.Include(u => u.User).SingleOrDefaultAsync(p => p.Id == id);
         }
 
         public Message Update(Message obj)
@@ -55,8 +54,15 @@ namespace Repository.Storage.Implementation
         public async Task<Message[]> GetMessagesByDialogIdAsync(int id, int limit, int offset)
         {
             var messages = await _context.Messages
-                .Include(m => m.UserDialog)
-                    .ThenInclude(u => u.Dialog.Id == id)
+                .Where(m => m.UserDialog.DialogId == id)
+                .Select(s => new Message
+                {
+                    Id = s.Id,
+                    DateTime = s.DateTime,                   
+                    Text = s.Text,
+                    UserId = s.UserId,
+                    User = s.User
+                })           
                 .OrderBy(d => d.DateTime)
                 .Skip(offset)
                 .Take(limit)
@@ -64,12 +70,20 @@ namespace Repository.Storage.Implementation
             return messages;            
         }
 
-        public async Task<bool> HasUserWithId(int userId, int messId)
+        public async Task<bool> HasUserWithId(int userId, long messId)
         {
-            return await _context.Messages
-                .Where(m => m.Id == messId)
-                .Include(m => m.UserDialog.UserId == userId)
-                .AnyAsync();
+            return await _context.Messages.AnyAsync(m => m.Id == messId && m.UserId == userId);
+        }
+
+        public async Task<UserDialog> GetUserDialogByDialogId(int dialogId)
+        {
+            UserDialog userDialog = await _context.UserDialogs.SingleOrDefaultAsync(u => u.DialogId == dialogId);
+            return userDialog;
+        }
+
+        public async Task<UserDialog> GetUserDialogByFKIdAsync(int userId, int dialogId)
+        {
+            return await _context.UserDialogs.SingleOrDefaultAsync(u => u.UserId == userId && u.DialogId == dialogId);
         }
     }
 }

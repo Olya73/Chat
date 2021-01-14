@@ -24,29 +24,118 @@ namespace Service.Implementation
             _mapper = mapper;
         }
 
-        public async Task CreatePrivateDialogAsync(DialogAddDTO dialogDTO)
+        public async Task<ServiceResponse<DialogGetDTO>> CreateDialogAsync(DialogAddDTO dialogDTO)
         {
-            if (dialogDTO.IsTeteATete && dialogDTO.UsersId.Count != 2) throw new Exception();
-            Dialog dialog = null;
-            _dialogRepository.Add(dialog);
-            await _context.SaveChangesAsync();
+            ServiceResponse<DialogGetDTO> serviceResponse = new ServiceResponse<DialogGetDTO>();
+
+            try
+            {
+                if (dialogDTO.IsTeteATete && dialogDTO.UserIds.Count != 2)
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Только два пользователя";
+                    return serviceResponse;
+                }
+                Dialog dialog = _mapper.Map<Dialog>(dialogDTO);
+                _dialogRepository.Add(dialog);
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = _mapper.Map<DialogGetDTO>(dialogDTO);
+                serviceResponse.Data.Id = dialog.Id;
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+                return serviceResponse;
+            }
+
+            return serviceResponse;
         }
 
-        public async Task CreateGroupDialogAsync(DialogAddDTO dialogDTO)
+        public async Task<ServiceResponse<int>> AddUserToDialogAsync(UserDialogAddDTO userDialogDTO)
         {
-            Dialog dialog = null;
-            _dialogRepository.Add(dialog);
-            await _context.SaveChangesAsync();
+            ServiceResponse<int> serviceResponse = new ServiceResponse<int>();
+
+            try
+            {
+                var dialog = await _dialogRepository.GetAsync(userDialogDTO.DialogId);
+                if (dialog.IsTeteATete)
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Только два пользователя";
+                    return serviceResponse;
+                }
+                UserDialog userDialog = new UserDialog()
+                {
+                    DialogId = userDialogDTO.DialogId,
+                    UserId = userDialogDTO.UserId
+                };
+                _dialogRepository.AddUserToDialog(userDialog);
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = userDialog.UserId;
+            }
+            catch(Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+                return serviceResponse;
+            }
+
+            return serviceResponse;
         }
 
-        public async Task AddUserToDialogAsync(UserDialogAddDTO userDialogDTO)
+        public async Task<ServiceResponse<bool>> DeleteUserFromDialogAsync(UserDialogAddDTO userDialogDTO)
         {
-            var id = userDialogDTO.DialogId;
-            var dialog = await _dialogRepository.GetAsync(id);
-            if (dialog.IsTeteATete ) throw new Exception();
-            UserDialog userDialogs = null;
-            _dialogRepository.AddUserToDialog(userDialogs);
-            await _context.SaveChangesAsync();
+            ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
+
+            try
+            {
+                UserDialog userDialog = await _dialogRepository.GetUserDialogByFKIdAsync(userDialogDTO.UserId, userDialogDTO.DialogId);
+                if (userDialog == null)
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Нет такого пользователя";
+                    return serviceResponse;
+                }
+                var dialog = await _dialogRepository.GetAsync(userDialogDTO.DialogId);
+                if (dialog.IsTeteATete)
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Только два пользователя. Нельзя удалить из приватной беседы";
+                    return serviceResponse;
+                }                
+                _dialogRepository.DeleteUserFromDialog(userDialog);
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = true;
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+                return serviceResponse;
+            }
+
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteDialogAsync(int id)
+        {
+            ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
+
+            try
+            {
+                bool deleted = await _dialogRepository.DeleteAsync(id);
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = deleted;
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+                return serviceResponse;
+            }
+
+            return serviceResponse;
         }
     }
 }

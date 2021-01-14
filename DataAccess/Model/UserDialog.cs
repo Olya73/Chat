@@ -8,11 +8,12 @@ namespace DataAccess.Model
     {
         public int Id { get; set; }
         public DateTime EnterDate { get; set; }
-        public DateTime LeaveDate { get; set; }
+        public DateTime? LeaveDate { get; set; }
         public int UserId { get; set; }
         public int DialogId { get; set; }
 
         public User User { get; set; }
         public Dialog Dialog { get; set; }
+        public List<Message> Messages { get; set; }
     }
 }

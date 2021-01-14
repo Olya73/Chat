@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Repository.Storage.Interface;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,10 +18,9 @@ namespace Repository.Storage.Implementation
             _context = context;
         }
 
-        public int Add(Dialog obj)
+        public void Add(Dialog obj)
         {
             _context.Dialogs.Add(obj);
-            return obj.Id;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -54,6 +54,21 @@ namespace Repository.Storage.Implementation
         public void AddUserToDialog(UserDialog userDialog)
         {
             _context.UserDialogs.Add(userDialog);
+        }
+
+        public void DeleteUserFromDialog(UserDialog userDialog)
+        {
+            _context.UserDialogs.Remove(userDialog);
+        }
+
+        public async Task<UserDialog> GetUserDialogByFKIdAsync(int userId, int dialogId)
+        {
+            return await _context.UserDialogs.SingleOrDefaultAsync(u => u.UserId == userId && u.DialogId == dialogId);
+        }
+
+        public async Task<UserDialog[]> GetUsersAsync(int id)
+        {
+            return await _context.UserDialogs.Where(u => u.DialogId == id).Include(u => u.User).ToArrayAsync();
         }
     }
 }

@@ -4,8 +4,9 @@ using System.Text;
 
 namespace Service.DTO
 {
-    public class DialogAddDTO
+    public class DialogGetDTO
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public bool IsTeteATete { get; set; }
         public List<int> UserIds { get; set; }

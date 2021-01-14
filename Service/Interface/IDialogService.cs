@@ -1,4 +1,5 @@
 ﻿using Service.DTO;
+using Service.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,8 +9,9 @@ namespace Service.Interface
 {
     public interface IDialogService
     {
-        void AddUsersToDialogAsync(List<UserDialogAddDTO> userDialogDTOs);
-        Task CreateGroupDialogAsync(DialogAddDTO dialogDTO);
-        Task CreatePrivateDialogAsync(DialogAddDTO dialogDTO);
+        Task<ServiceResponse<int>> AddUserToDialogAsync(UserDialogAddDTO userDialogDTO);
+        Task<ServiceResponse<DialogGetDTO>> CreateDialogAsync(DialogAddDTO dialogDTO);
+        Task<ServiceResponse<bool>> DeleteDialogAsync(int id);
+        Task<ServiceResponse<bool>> DeleteUserFromDialogAsync(UserDialogAddDTO userDialogDTO);
     }
 }

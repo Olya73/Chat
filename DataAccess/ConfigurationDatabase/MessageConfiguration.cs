@@ -18,7 +18,8 @@ namespace DataAccess.ConfigurationDatabase
             entityBuilder.Property(m => m.DateTime)
                 .HasColumnName("datetime")
                 .HasColumnType("timestamptz")
-                .HasDefaultValue("current_timestamp()");
+                .HasDefaultValueSql("now() at time zone 'utc'");
+            entityBuilder.Property(m => m.UserId).HasColumnName("user_id");
 
             entityBuilder.ToTable("messages");
         }

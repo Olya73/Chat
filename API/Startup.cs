@@ -13,6 +13,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Repository;
+using Repository.Storage.Implementation;
+using Repository.Storage.Interface;
+using Service.Implementation;
+using Service.Interface;
 
 namespace API
 {
@@ -39,7 +43,10 @@ namespace API
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-
+            services.AddScoped(typeof(IDialogRepository), typeof(DialogRepository));
+            services.AddScoped(typeof(IMessageRepository), typeof(MessageRepository));
+            services.AddScoped(typeof(IDialogService), typeof(DialogService));
+            services.AddScoped(typeof(IMessageService), typeof(MessageService));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
