@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BotLibrary.Inteface;
 using DataAccess.Model;
 using Repository;
 using Repository.Storage.Interface;
@@ -16,12 +17,23 @@ namespace Service.Implementation
         private readonly ChatNpgSQLContext _context;
         private readonly IDialogRepository _dialogRepository;
         private readonly IMapper _mapper;
+        private readonly IBotManager _botManager;
+        private readonly IBotRepository _botRepository;
+        private readonly IChatActionRepository _chatActionRepository;
 
-        public DialogService(ChatNpgSQLContext context, IDialogRepository dialogRepository, IMapper mapper)
+        public DialogService(ChatNpgSQLContext context, 
+            IDialogRepository dialogRepository, 
+            IMapper mapper, 
+            IBotManager botManager, 
+            IBotRepository botRepository,
+            IChatActionRepository chatActionRepository)
         {
             _context = context;
             _dialogRepository = dialogRepository;
             _mapper = mapper;
+            _botManager = botManager;
+            _botRepository = botRepository;
+            _chatActionRepository = chatActionRepository;
         }
 
         public async Task<ServiceResponse<DialogGetDTO>> CreateDialogAsync(DialogAddDTO dialogDTO)
@@ -72,6 +84,20 @@ namespace Service.Implementation
                 };
                 _dialogRepository.AddUserToDialog(userDialog);
                 await _context.SaveChangesAsync();
+
+                string[] names = await _botRepository.GetBotsNamesByDialogIdAsync(userDialogDTO.DialogId);
+                foreach (var response in _botManager.BotOnMessage(names, "NewMessage"))
+                {
+                    ChatAction chatAction = new ChatAction()
+                    {
+                        DialogId = userDialogDTO.DialogId,
+                        UserId = userDialogDTO.UserId,
+                        BotResponse = response,
+                        TypeOfActionId = 1
+                    };
+                    _chatActionRepository.Add(chatAction);
+                }
+
                 serviceResponse.Data = userDialog.UserId;
             }
             catch(Exception ex)
@@ -135,6 +161,18 @@ namespace Service.Implementation
                 return serviceResponse;
             }
 
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<UserGetDTO[]>> GetUsersByDialogId(int id)
+        {
+            ServiceResponse<UserGetDTO[]> serviceResponse = new ServiceResponse<UserGetDTO[]>();
+
+            serviceResponse.Data = _mapper.Map<UserGetDTO[]>(await _dialogRepository.GetUsersByDialogIdAsync(id));
+            foreach (var bot in _botManager.BotOnMessage(new string[] { "Hi", "Shit" }, "rthytffg"))
+            {
+                var str = bot;
+            }
             return serviceResponse;
         }
     }

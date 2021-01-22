@@ -39,7 +39,6 @@ namespace Service.Implementation
                 }
                 Message message = new Message()
                 {
-                    UserId = messageDTO.UserId,
                     Text = messageDTO.Text,
                     UserDialog = userDialog
                 };

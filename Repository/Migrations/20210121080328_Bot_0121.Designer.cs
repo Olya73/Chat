@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Repository;
@@ -9,9 +10,10 @@ using Repository;
 namespace Repository.Migrations
 {
     [DbContext(typeof(ChatNpgSQLContext))]
-    partial class ChatNpgSQLContextModelSnapshot : ModelSnapshot
+    [Migration("20210121080328_Bot_0121")]
+    partial class Bot_0121
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

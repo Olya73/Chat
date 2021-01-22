@@ -10,8 +10,8 @@ using Repository;
 namespace Repository.Migrations
 {
     [DbContext(typeof(ChatNpgSQLContext))]
-    [Migration("20210114051228_Initial_0114")]
-    partial class Initial_0114
+    [Migration("20210121075727_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -57,7 +57,7 @@ namespace Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamptz")
                         .HasColumnName("datetime")
-                        .HasDefaultValueSql("current_timestamp");
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -68,15 +68,9 @@ namespace Repository.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("user_dialog_id");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id");
 
                     b.HasIndex("UserDialogId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("messages");
                 });
@@ -116,7 +110,7 @@ namespace Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamptz")
                         .HasColumnName("enter_date")
-                        .HasDefaultValueSql("current_timestamp");
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<DateTime?>("LeaveDate")
                         .HasColumnType("timestamptz")
@@ -143,14 +137,6 @@ namespace Repository.Migrations
                         .HasForeignKey("UserDialogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("DataAccess.Model.User", "User")
-                        .WithMany("Messages")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
 
                     b.Navigation("UserDialog");
                 });
@@ -181,8 +167,6 @@ namespace Repository.Migrations
 
             modelBuilder.Entity("DataAccess.Model.User", b =>
                 {
-                    b.Navigation("Messages");
-
                     b.Navigation("UserDialogs");
                 });
 

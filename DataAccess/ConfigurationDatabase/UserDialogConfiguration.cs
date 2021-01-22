@@ -19,7 +19,7 @@ namespace DataAccess.ConfigurationDatabase
                 .HasColumnName("enter_date")
                 .HasColumnType("timestamptz")
                 .HasDefaultValueSql("now() at time zone 'utc'");
-            entityBuilder.Property(u => u.LeaveDate).HasColumnName("leave_date").HasColumnType("timestamptz").HasDefaultValue(null); //сделать null
+            entityBuilder.Property(u => u.LeaveDate).HasColumnName("leave_date").HasColumnType("timestamptz");
 
             entityBuilder.HasIndex(u => new { u.UserId, u.DialogId }).IsUnique();
 

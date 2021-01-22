@@ -42,7 +42,7 @@ namespace Repository.Storage.Implementation
 
         public async Task<Message> GetAsync(long id)
         {
-            return await _context.Messages.Include(u => u.User).SingleOrDefaultAsync(p => p.Id == id);
+            return await _context.Messages.Include(u=> u.UserDialog).ThenInclude(u => u.User).SingleOrDefaultAsync(p => p.Id == id);
         }
 
         public Message Update(Message obj)
@@ -55,14 +55,7 @@ namespace Repository.Storage.Implementation
         {
             var messages = await _context.Messages
                 .Where(m => m.UserDialog.DialogId == id)
-                .Select(s => new Message
-                {
-                    Id = s.Id,
-                    DateTime = s.DateTime,                   
-                    Text = s.Text,
-                    UserId = s.UserId,
-                    User = s.User
-                })           
+                .Include(s => s.UserDialog).ThenInclude(u => u.User)       
                 .OrderBy(d => d.DateTime)
                 .Skip(offset)
                 .Take(limit)
@@ -72,7 +65,7 @@ namespace Repository.Storage.Implementation
 
         public async Task<bool> HasUserWithId(int userId, long messId)
         {
-            return await _context.Messages.AnyAsync(m => m.Id == messId && m.UserId == userId);
+            return await _context.Messages.AnyAsync(m => m.Id == messId && m.UserDialog.UserId == userId);
         }
 
         public async Task<UserDialog> GetUserDialogByDialogId(int dialogId)

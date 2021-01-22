@@ -13,5 +13,6 @@ namespace Service.Interface
         Task<ServiceResponse<DialogGetDTO>> CreateDialogAsync(DialogAddDTO dialogDTO);
         Task<ServiceResponse<bool>> DeleteDialogAsync(int id);
         Task<ServiceResponse<bool>> DeleteUserFromDialogAsync(UserDialogAddDTO userDialogDTO);
+        Task<ServiceResponse<UserGetDTO[]>> GetUsersByDialogId(int id);
     }
 }

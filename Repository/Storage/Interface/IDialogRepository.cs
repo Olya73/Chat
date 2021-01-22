@@ -11,6 +11,6 @@ namespace Repository.Storage.Interface
         void AddUserToDialog(UserDialog userDialog);
         void DeleteUserFromDialog(UserDialog userDialog);
         Task<UserDialog> GetUserDialogByFKIdAsync(int userId, int dialogId);
-        Task<UserDialog[]> GetUsersAsync(int id);
+        Task<User[]> GetUsersByDialogIdAsync(int id);
     }
 }

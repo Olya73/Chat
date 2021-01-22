@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using BotLibrary;
+using BotLibrary.Implementation;
+using BotLibrary.Inteface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -15,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Repository;
 using Repository.Storage.Implementation;
 using Repository.Storage.Interface;
+using Service;
 using Service.Implementation;
 using Service.Interface;
 
@@ -34,6 +38,7 @@ namespace API
         {
             services.AddControllers();
 
+            
             services.AddDbContextPool<ChatNpgSQLContext>(options =>
             {
                 options.UseNpgsql(Configuration.GetConnectionString("AspPostgreSQLContext"));
@@ -47,6 +52,10 @@ namespace API
             services.AddScoped(typeof(IMessageRepository), typeof(MessageRepository));
             services.AddScoped(typeof(IDialogService), typeof(DialogService));
             services.AddScoped(typeof(IMessageService), typeof(MessageService));
+            services.AddScoped(typeof(IBotRepository), typeof(BotRepository));
+            services.AddScoped(typeof(IBotService), typeof(BotService));
+
+            services.AddSingleton<IBotManager>(BotLoader.Load);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

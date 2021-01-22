@@ -56,10 +56,22 @@ namespace API.Controllers
         }
 
         [HttpDelete]
-        [Route("{dialogId}/users/{userId}")]
+        [Route("{dialogId:int}/users/{userId:int}")]
         public async Task<IActionResult> Delete([FromRoute] UserDialogAddDTO userDialogAddDTO)
         {
             ServiceResponse<bool> serviceResponse = await _dialogService.DeleteUserFromDialogAsync(userDialogAddDTO);
+            if (serviceResponse.Success == false)
+            {
+                return BadRequest(serviceResponse.Message);
+            }
+            return Ok(serviceResponse);
+        }
+
+        [HttpGet]
+        [Route("{id:int}/users")]
+        public async Task<IActionResult> Get(int id)
+        {
+            ServiceResponse<UserGetDTO[]> serviceResponse = await _dialogService.GetUsersByDialogId(id);
             if (serviceResponse.Success == false)
             {
                 return BadRequest(serviceResponse.Message);

@@ -4,14 +4,14 @@ using System.Text;
 
 namespace DataAccess.Model
 {
-    public class Dialog
+    public class Bot
     {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public bool IsTeteATete { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Implementation { get; set; }
 
+        public List<BotTypeOfBot> BotTypes { get; set; }
         public List<BotDialog> BotDialogs { get; set; }
-        public List<UserDialog> UserDialogs { get; set; }
         public List<ChatAction> ChatActions { get; set; }
 
     }

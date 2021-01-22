@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Repository.Migrations
 {
-    public partial class Iniitial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -41,8 +41,8 @@ namespace Repository.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    enter_date = table.Column<DateTime>(type: "timestamptz", nullable: false, defaultValueSql: "current_timestamp"),
-                    leave_date = table.Column<DateTime>(type: "timestamptz", nullable: false),
+                    enter_date = table.Column<DateTime>(type: "timestamptz", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
+                    leave_date = table.Column<DateTime>(type: "timestamptz", nullable: true),
                     user_id = table.Column<int>(type: "integer", nullable: false),
                     dialog_id = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -70,7 +70,7 @@ namespace Repository.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     text = table.Column<string>(type: "text", nullable: false),
-                    datetime = table.Column<DateTime>(type: "timestamptz", nullable: false, defaultValueSql: "current_timestamp"),
+                    datetime = table.Column<DateTime>(type: "timestamptz", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
                     user_dialog_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>

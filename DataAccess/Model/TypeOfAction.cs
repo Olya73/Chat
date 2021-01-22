@@ -4,13 +4,11 @@ using System.Text;
 
 namespace DataAccess.Model
 {
-    public class User
+    public class TypeOfAction
     {
         public int Id { get; set; }
-        public string Login { get; set; }
+        public string Type { get; set; }
 
-        //public List<Message> Messages { get; set; }
-        public List<UserDialog> UserDialogs { get; set; }
         public List<ChatAction> ChatActions { get; set; }
     }
 }

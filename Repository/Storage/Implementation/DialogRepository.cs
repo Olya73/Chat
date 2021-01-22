@@ -66,9 +66,17 @@ namespace Repository.Storage.Implementation
             return await _context.UserDialogs.SingleOrDefaultAsync(u => u.UserId == userId && u.DialogId == dialogId);
         }
 
-        public async Task<UserDialog[]> GetUsersAsync(int id)
+        public async Task<User[]> GetUsersByDialogIdAsync(int id)
         {
-            return await _context.UserDialogs.Where(u => u.DialogId == id).Include(u => u.User).ToArrayAsync();
+            User[]users = await _context.UserDialogs
+                .Where(u => u.DialogId == id)
+                .Select(s => new User()
+                {
+                    Id = s.User.Id,
+                    Login = s.User.Login
+                })
+                .ToArrayAsync();
+            return users;
         }
     }
 }
