@@ -1,4 +1,6 @@
-﻿using BotLibrary.Inteface;
+﻿using Contract.Bot;
+using Contract.Bot.Interface;
+using Contract.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,12 +9,17 @@ namespace BotLibrary.Implementation
 {
     class HiBot : IEventBot
     {
+        public ActionTypes AllowedActions => ActionTypes.UserAdded;
         public string Name => "Hi";
-        public List<int> DialogIds { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public string OnEvent(string v)
+        public string OnEvent(BotMessageDTO botMessageDTO, ActionTypes action)
         {
-            return Name;
+            if (action == AllowedActions)
+            {
+                if (String.IsNullOrEmpty(botMessageDTO.Login))
+                    return $"Hello {botMessageDTO.Login}";
+            }
+            return null;
         }
     }
 }

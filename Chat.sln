@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotLibrary", "Bot\BotLibrary.csproj", "{7E4C2A0D-3418-4D46-8E58-D5DDB602FA2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contract", "Contract\Contract.csproj", "{139FA7FB-E46E-4973-BB29-A0F58A07F830}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contract", "Contract\Contract.csproj", "{139FA7FB-E46E-4973-BB29-A0F58A07F830}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMQ.Worker", "RabbitMQ.Worker\RabbitMQ.Worker.csproj", "{2E203756-40B8-4DE4-B211-070BDE523C43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{139FA7FB-E46E-4973-BB29-A0F58A07F830}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{139FA7FB-E46E-4973-BB29-A0F58A07F830}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{139FA7FB-E46E-4973-BB29-A0F58A07F830}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E203756-40B8-4DE4-B211-070BDE523C43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E203756-40B8-4DE4-B211-070BDE523C43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E203756-40B8-4DE4-B211-070BDE523C43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E203756-40B8-4DE4-B211-070BDE523C43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

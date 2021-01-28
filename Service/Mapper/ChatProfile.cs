@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using Contract.DTO;
 using DataAccess.Model;
-using Service.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,6 +20,7 @@ namespace Service.Mapper
             CreateMap<int, UserDialog>()
                 .ForMember(map => map.UserId, map => map.MapFrom(c => c));
             CreateMap<DialogAddDTO, DialogGetDTO>();
+            CreateMap<BotDialogAddDTO, BotDialog>();
         }
     }
 }

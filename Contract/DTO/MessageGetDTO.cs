@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Service.DTO
+namespace Contract.DTO
 {
     public class MessageGetDTO
     {
@@ -11,5 +11,6 @@ namespace Service.DTO
         public string Text { get; set; }
         public UserGetDTO User { get; set; }
         public int UserId { get; set; }
+        public int DialogId { get; set; }
     }
 }

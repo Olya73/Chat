@@ -1,23 +1,55 @@
-﻿using BotLibrary.Inteface;
+﻿using Contract.Bot;
+using Contract.Bot.Interface;
+using Contract.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace BotLibrary.Implementation
 {
     class ShitBot : IEventBot, IMessageBot
     {
         public string Name => "Shit";
-        public List<int> DialogIds { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public string OnEvent(string v)
+        public ActionTypes AllowedActions => ActionTypes.UserAdded | ActionTypes.UserDeleted | ActionTypes.NewMessage;
+        private string[] _answersOnDelete = 
+        {   "Проваливай!", 
+            "Отдыхай!",
+            "Anu belore dala'na" };
+        private string[] _answersOnMessage =
+        {   "",
+            "",
+            ""};
+        private string[] _replacements =
         {
-            return Name;
+            "блин",
+            "капец",
+            "кароч"
+        };
+
+        public string OnEvent(BotMessageDTO botMessageDTO, ActionTypes action)
+        {
+            if ((AllowedActions & action) == ActionTypes.UserAdded)
+            {
+                return $"Ты кто? Кто его позвал? Чей это друг?";
+            }
+            else if ((AllowedActions & action) == ActionTypes.UserDeleted)
+            {
+                return _answersOnDelete[new Random().Next(_answersOnDelete.Length)];
+            }
+            else if ((AllowedActions & action) == ActionTypes.NewMessage)
+            {
+                return _answersOnMessage[new Random().Next(_answersOnMessage.Length)];
+            }
+            return null;
         }
 
-        public string OnMessage(string v)
+        public string OnMessage(BotMessageDTO botMessageDTO)
         {
-            throw new NotImplementedException();
+            string pattern = @"((\w+\s\w+){" + new Random().Next(1, 4) + @"})\s";
+            string replacement = "$1 " + _replacements[new Random().Next(_replacements.Length)] + " ";
+
+            return Regex.Replace(botMessageDTO.Message, pattern, replacement);
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Service.DTO;
 using Service.Interface;
 
 namespace API.Controllers
@@ -19,15 +18,10 @@ namespace API.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
-        private readonly IDialogService _dialogService;
-        private readonly IMessageService _messageService;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IDialogService dialogService,
-        IMessageService messageService)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger)
         {
             _logger = logger;
-            _dialogService = dialogService;
-            _messageService = messageService;
         }
 
         [HttpGet]

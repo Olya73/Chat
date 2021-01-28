@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Contract.DTO;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BotLibrary.Inteface
+namespace Contract.Bot.Interface
 {
     public interface IBot
     {
         string Name { get;}
-        List<int> DialogIds { get; set; }
     }
 }

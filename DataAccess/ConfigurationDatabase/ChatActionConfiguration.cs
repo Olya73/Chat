@@ -17,7 +17,7 @@ namespace DataAccess.ConfigurationDatabase
             entityBuilder.Property(d => d.MessageId).HasColumnName("message_id");
             entityBuilder.Property(d => d.UserId).HasColumnName("user_id").IsRequired();
             entityBuilder.Property(d => d.DialogId).HasColumnName("dialog_id").IsRequired();
-            entityBuilder.Property(d => d.BotName).HasColumnName("bot_name");
+            entityBuilder.Property(d => d.BotName).HasColumnName("bot_name").IsRequired();
             entityBuilder.Property(d => d.BotResponse).HasColumnName("bot_response");
             entityBuilder.HasOne(d => d.Message).WithMany(m => m.ChatActions).OnDelete(DeleteBehavior.Cascade);
 

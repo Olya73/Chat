@@ -12,6 +12,7 @@ namespace DataAccess.ConfigurationDatabase
         public TypeOfActionConfiguration(EntityTypeBuilder<TypeOfAction> entityBuilder)
         {
             entityBuilder.HasKey(t => t.Id);
+            entityBuilder.Property(b => b.Id).HasColumnName("id").HasDefaultValueSql("2 ^ nextval('seq_action_types')");
             entityBuilder.Property(t => t.Type).HasColumnName("type").IsRequired();
 
             entityBuilder.ToTable("type_of_actions");

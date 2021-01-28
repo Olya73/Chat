@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Service.DTO
+namespace Contract.DTO
 {
     public class DialogAddDTO
     {

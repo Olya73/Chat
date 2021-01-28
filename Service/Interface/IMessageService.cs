@@ -1,5 +1,5 @@
-﻿using DataAccess.Model;
-using Service.DTO;
+﻿using Contract.DTO;
+using DataAccess.Model;
 using Service.Implementation;
 using System;
 using System.Collections.Generic;

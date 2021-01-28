@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bot\BotLibrary.csproj" />
+    <ProjectReference Include="..\Contract\Contract.csproj" />
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
     <ProjectReference Include="..\Repository\Repository.csproj" />
   </ItemGroup>

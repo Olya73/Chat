@@ -1,4 +1,4 @@
-﻿using Service.DTO;
+﻿using Contract.DTO;
 using Service.Implementation;
 using System;
 using System.Collections.Generic;

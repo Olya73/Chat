@@ -52,9 +52,14 @@ namespace Repository.Storage.Implementation
             //    .Select(d => d.Bot.Name).ToArrayAsync();
         }
 
-        public void AddChatAction()
+        public void AddBotToDialog(BotDialog botDialog)
         {
+            _context.BotDialogs.Add(botDialog);
+        }
 
+        public void DeleteBotFromDialog(BotDialog botDialog)
+        {
+            _context.BotDialogs.Remove(botDialog);
         }
     }
 }

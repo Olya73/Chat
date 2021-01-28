@@ -15,6 +15,7 @@ namespace Repository
         public DbSet<UserDialog> UserDialogs { get; set; }
         public DbSet<Bot> Bots { get; set; }
         public DbSet<ChatAction> ChatActions { get; set; }
+        public DbSet<BotDialog> BotDialogs { get; set; }
 
         public ChatNpgSQLContext(DbContextOptions<ChatNpgSQLContext> options) : base(options)
         { }
