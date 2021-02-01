@@ -5,6 +5,8 @@ using System.Linq;
 using Contract.Bot;
 using Contract.DTO;
 using Contract.Bot.Interface;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace BotLibrary.Implementation
 {
@@ -17,36 +19,53 @@ namespace BotLibrary.Implementation
             _serviceProvider = serviceProvider;
         }
 
-        public IEnumerable<string> BotOnMessage(BotMessageDTO botMessage, string[] botNames)
+        public IEnumerable<BotMessageDTO> BotOnMessage(MessageGetDTO messageGetDTO, string[] botNames)
         {
             using var scope = _serviceProvider.CreateScope();
             foreach (var messagesBot in scope.ServiceProvider.GetServices<IMessageBot>()
                 .Where(service => botNames.Contains(service.Name)))
-                    yield return messagesBot.OnMessage(botMessage);
+                    yield return new BotMessageDTO()
+                    {
+                        Message = messagesBot.OnMessage(messageGetDTO),
+                        BotName = messagesBot.Name
+                    };
         }
 
-        public IEnumerable<string> BotOnCommand(BotMessageDTO botMessage, string[] botNames)
+        public IEnumerable<BotMessageDTO> BotOnCommand(MessageGetDTO messageGetDTO, string[] botNames)
         {
             using var scope = _serviceProvider.CreateScope();
             foreach (var commandBot in scope.ServiceProvider.GetServices<ICommandBot>()
                 .Where(service => botNames.Contains(service.Name)))
-                    yield return commandBot.OnCommand(botMessage);
+                    yield return new BotMessageDTO()
+                    {
+                        Message = commandBot.OnCommand(messageGetDTO),
+                        BotName = commandBot.Name
+                    };
         }
 
-        public IEnumerable<string> BotOnEvent(string[] botNames, ActionTypes actionType, BotMessageDTO botMessage)
+        public IEnumerable<BotMessageDTO> BotOnEvent(MessageGetDTO messageGetDTO, string[] botNames, ActionTypes actionType)
         {
             using var scope = _serviceProvider.CreateScope();
             foreach (var eventBot in scope.ServiceProvider.GetServices<IEventBot>()
                 .Where(service => botNames.Contains(service.Name) && service.AllowedActions.HasFlag(actionType)))
-                    yield return eventBot.OnEvent(botMessage, actionType);
+                    yield return new BotMessageDTO()
+                    {
+                        Message = eventBot.OnEvent(messageGetDTO, actionType),
+                        BotName = eventBot.Name
+                    };
+
 
             if (actionType == ActionTypes.NewMessage)
             {
-                foreach (var bot in BotOnMessage(botMessage, botNames))
-                    yield return bot;
-                foreach (var bot in BotOnCommand(botMessage, botNames))
+                foreach (var bot in BotOnMessage(messageGetDTO, botNames))
                     yield return bot;
             }
+            else if (actionType == ActionTypes.NewCommand)
+            {
+                foreach (var bot in BotOnCommand(messageGetDTO, botNames))
+                    yield return bot;
+            }
+                
         }
     }
 }

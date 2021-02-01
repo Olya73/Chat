@@ -7,9 +7,9 @@ using System.Text;
 
 namespace DataAccess.ConfigurationDatabase
 {
-    public class ChatActionConfiguration
+    public class ChatEventConfiguration
     {
-        public ChatActionConfiguration(EntityTypeBuilder<ChatAction> entityBuilder)
+        public ChatEventConfiguration(EntityTypeBuilder<ChatEvent> entityBuilder)
         {
             entityBuilder.HasKey(d => d.Id);
             entityBuilder.Property(d => d.Id).HasColumnName("id").ValueGeneratedOnAdd();
@@ -17,11 +17,9 @@ namespace DataAccess.ConfigurationDatabase
             entityBuilder.Property(d => d.MessageId).HasColumnName("message_id");
             entityBuilder.Property(d => d.UserId).HasColumnName("user_id").IsRequired();
             entityBuilder.Property(d => d.DialogId).HasColumnName("dialog_id").IsRequired();
-            entityBuilder.Property(d => d.BotName).HasColumnName("bot_name").IsRequired();
-            entityBuilder.Property(d => d.BotResponse).HasColumnName("bot_response");
-            entityBuilder.HasOne(d => d.Message).WithMany(m => m.ChatActions).OnDelete(DeleteBehavior.Cascade);
+            entityBuilder.Property(d => d.State).HasColumnName("state").IsRequired().HasDefaultValue(0);
 
-            entityBuilder.ToTable("chat_actions");
+            entityBuilder.ToTable("chat_events");
         }
     }
 }

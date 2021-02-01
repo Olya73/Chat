@@ -54,8 +54,10 @@ namespace API
             services.AddScoped(typeof(IMessageService), typeof(MessageService));
             services.AddScoped(typeof(IBotRepository), typeof(BotRepository));
             services.AddScoped(typeof(IBotService), typeof(BotService));
-            services.AddScoped(typeof(IChatActionRepository), typeof(ChatActionRepository));
+            services.AddScoped(typeof(IBotActionOnEventRepository), typeof(BotActionOnEventRepository));
             services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+            services.AddScoped(typeof(IChatEventRepository), typeof(ChatEventRepository));
+            services.AddScoped(typeof(IChatActionService), typeof(ChatActionService));
 
             services.AddSingleton<IBotManager>(BotLoader.Load);
         }

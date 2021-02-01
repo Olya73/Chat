@@ -15,14 +15,14 @@ namespace RabbitMQ.Worker
     {
         static void Main()
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var factory = new ConnectionFactory() { HostName = "localhost", DispatchConsumersAsync = true };
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
 
             channel.QueueDeclare(queue: "rpc_queue", durable: true, exclusive: false, autoDelete: false, arguments: null);
             channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
 
-            var consumer = new EventingBasicConsumer(channel);
+            var consumer = new AsyncEventingBasicConsumer(channel);
             consumer.Received += async (model, ea) =>
             {
                 var reply = channel.CreateBasicProperties();
@@ -56,7 +56,7 @@ namespace RabbitMQ.Worker
                       multiple: false);
                 }
             };
-            channel.BasicConsume(queue: "rpc_queue", autoAck: false, consumer: consumer);
+            channel.BasicConsume(queue: "rpc_queue", autoAck: true, consumer: consumer);
             Console.WriteLine(" Press enter to shutdown.");
             Console.ReadLine();
         }
@@ -88,7 +88,7 @@ namespace RabbitMQ.Worker
         static string CreatePathAsync(JObject json)
         {
             
-            var userFolder = json.SelectToken("Login").ToString();
+            var userFolder = json.SelectToken("login").ToString();
             var folder = json.SelectToken("folder").ToString();
             try
             {

@@ -20,9 +20,9 @@ namespace BotLibrary.Implementation
         string pattern = @"^через\s([0-5]?\d|60)\z";
         string onCommandResponse = "Через {0} минут будет {1}:{2}.";
 
-        public string OnCommand(BotMessageDTO botMessageDTO)
+        public string OnCommand(MessageGetDTO messageGetDTO)
         {
-            int existing = CommandExists(botMessageDTO.Message);
+            int existing = CommandExists(messageGetDTO.Text);
             switch (existing)
             { 
                 case 0 :
@@ -34,9 +34,9 @@ namespace BotLibrary.Implementation
             }
         }
 
-        public string OnMessage(BotMessageDTO botMessageDTO)
+        public string OnMessage(MessageGetDTO messageGetDTO)
         {
-            Match match = Regex.Match(botMessageDTO.Message, pattern);
+            Match match = Regex.Match(messageGetDTO.Text, pattern);
             if (match.Success)
             {
                 int minutes = int.Parse(match.Result("$1"));

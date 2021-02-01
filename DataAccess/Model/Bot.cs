@@ -12,7 +12,7 @@ namespace DataAccess.Model
 
         public List<BotTypeOfBot> BotTypes { get; set; }
         public List<BotDialog> BotDialogs { get; set; }
-        public List<ChatAction> ChatActions { get; set; }
+        public List<BotActionOnEvent> BotActionOnEvents { get; set; }
 
     }
 }

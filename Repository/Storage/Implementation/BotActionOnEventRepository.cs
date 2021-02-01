@@ -6,16 +6,16 @@ using System.Text;
 
 namespace Repository.Storage.Implementation
 {
-    public class ChatActionRepository: IChatActionRepository
+    public class BotActionOnEventRepository: IBotActionOnEventRepository
     {
         private readonly ChatNpgSQLContext _context;
 
-        public ChatActionRepository(ChatNpgSQLContext context)
+        public BotActionOnEventRepository(ChatNpgSQLContext context)
         {
             _context = context;
         }
 
-        public void Add(ChatAction obj)
+        public void Add(BotActionOnEvent obj)
         {
             _context.ChatActions.Add(obj);
         }

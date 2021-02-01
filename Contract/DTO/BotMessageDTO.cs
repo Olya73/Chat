@@ -6,7 +6,7 @@ namespace Contract.DTO
 {
     public class BotMessageDTO
     {
-        public string Login { get; set; }
+        public string BotName { get; set; }
         public string Message { get; set; }
     }
 }

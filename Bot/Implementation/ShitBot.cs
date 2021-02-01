@@ -19,7 +19,8 @@ namespace BotLibrary.Implementation
         private string[] _answersOnMessage =
         {   "",
             "",
-            ""};
+            ""
+        };
         private string[] _replacements =
         {
             "блин",
@@ -27,7 +28,7 @@ namespace BotLibrary.Implementation
             "кароч"
         };
 
-        public string OnEvent(BotMessageDTO botMessageDTO, ActionTypes action)
+        public string OnEvent(MessageGetDTO messageGetDTO, ActionTypes action)
         {
             if ((AllowedActions & action) == ActionTypes.UserAdded)
             {
@@ -44,12 +45,12 @@ namespace BotLibrary.Implementation
             return null;
         }
 
-        public string OnMessage(BotMessageDTO botMessageDTO)
+        public string OnMessage(MessageGetDTO messageGetDTO)
         {
             string pattern = @"((\w+\s\w+){" + new Random().Next(1, 4) + @"})\s";
             string replacement = "$1 " + _replacements[new Random().Next(_replacements.Length)] + " ";
 
-            return Regex.Replace(botMessageDTO.Message, pattern, replacement);
+            return Regex.Replace(messageGetDTO.Text, pattern, replacement);
         }
     }
 }

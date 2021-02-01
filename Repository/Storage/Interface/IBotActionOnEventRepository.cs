@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Repository.Storage.Interface
 {
-    public interface IChatActionRepository
+    public interface IBotActionOnEventRepository
     {
-        void Add(ChatAction obj);
+        void Add(BotActionOnEvent obj);
     }
 }

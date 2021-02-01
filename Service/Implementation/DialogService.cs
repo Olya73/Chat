@@ -18,26 +18,14 @@ namespace Service.Implementation
         private readonly ChatNpgSQLContext _context;
         private readonly IDialogRepository _dialogRepository;
         private readonly IMapper _mapper;
-        private readonly IBotManager _botManager;
-        private readonly IBotRepository _botRepository;
-        private readonly IChatActionRepository _chatActionRepository;
-        private readonly IUserRepository _userRepository;
 
         public DialogService(ChatNpgSQLContext context, 
             IDialogRepository dialogRepository, 
-            IMapper mapper, 
-            IBotManager botManager, 
-            IBotRepository botRepository,
-            IChatActionRepository chatActionRepository,
-            IUserRepository userRepository)
+            IMapper mapper)
         {
             _context = context;
             _dialogRepository = dialogRepository;
             _mapper = mapper;
-            _botManager = botManager;
-            _botRepository = botRepository;
-            _chatActionRepository = chatActionRepository;
-            _userRepository = userRepository;
         }
 
         public async Task<ServiceResponse<DialogGetDTO>> CreateDialogAsync(DialogAddDTO dialogDTO)
@@ -53,7 +41,8 @@ namespace Service.Implementation
                     return serviceResponse;
                 }
                 Dialog dialog = _mapper.Map<Dialog>(dialogDTO);
-                _dialogRepository.Add(dialog);
+                Dialog dialog1 = null;
+                _dialogRepository.Add(dialog1);
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<DialogGetDTO>(dialogDTO);
                 serviceResponse.Data.Id = dialog.Id;
@@ -161,71 +150,8 @@ namespace Service.Implementation
             ServiceResponse<UserGetDTO[]> serviceResponse = new ServiceResponse<UserGetDTO[]>();
 
             serviceResponse.Data = _mapper.Map<UserGetDTO[]>(await _dialogRepository.GetUsersByDialogIdAsync(id));
-            foreach (var response in _botManager.BotOnEvent(new string[] { "Downloader"}, ActionTypes.NewMessage, new BotMessageDTO() { Message = "скачай https://sun9-49.userapi.com/5ORYZm-mry5yqy7CtSKHJTZZHH5r2USfnPCD/-2mmyTxTSGU.jpg images52", Login = "hi"}))
-            {
-                var s = response;
-            }
+
             return serviceResponse;
-        }
-
-        public async Task<List<string>> GetBotsOnUserAdded(UserDialogAddDTO userDialogDTO)
-        {
-            List<string> responses = new List<string>();
-
-            string[] names = await _botRepository.GetBotsNamesByDialogIdAsync(userDialogDTO.DialogId);
-            User user = await _userRepository.GetAsync(userDialogDTO.UserId);
-            BotMessageDTO botMessageDTO = new BotMessageDTO()
-            {
-                Login = user.Login
-            };
-
-            foreach (var response in _botManager.BotOnEvent(names, ActionTypes.UserAdded, botMessageDTO))
-            {
-                if (!String.IsNullOrEmpty(response))
-                {
-                    ChatAction chatAction = new ChatAction()
-                    {
-                        DialogId = userDialogDTO.DialogId,
-                        UserId = userDialogDTO.UserId,
-                        BotResponse = response,
-                        TypeOfActionId = (int)ActionTypes.UserAdded
-                    };
-                    _chatActionRepository.Add(chatAction);
-                    await _context.SaveChangesAsync();
-                    responses.Add(response);
-                }
-            }
-            return responses;
-        }
-
-        public async Task<List<string>> GetBotsOnUserDeleted(UserDialogAddDTO userDialogDTO)
-        {
-            List<string> responses = new List<string>();
-
-            string[] names = await _botRepository.GetBotsNamesByDialogIdAsync(userDialogDTO.DialogId);
-            User user = await _userRepository.GetAsync(userDialogDTO.UserId);
-            BotMessageDTO botMessageDTO = new BotMessageDTO()
-            {
-                Login = user.Login
-            };
-
-            foreach (var response in _botManager.BotOnEvent(names, ActionTypes.UserDeleted, botMessageDTO))
-            {
-                if (!String.IsNullOrEmpty(response))
-                {
-                    ChatAction chatAction = new ChatAction()
-                    {
-                        DialogId = userDialogDTO.DialogId,
-                        UserId = userDialogDTO.UserId,
-                        BotResponse = response,
-                        TypeOfActionId = (int)ActionTypes.UserDeleted
-                    };
-                    _chatActionRepository.Add(chatAction);
-                    await _context.SaveChangesAsync();
-                    responses.Add(response);
-                }
-            }
-            return responses;
         }
     }
 }

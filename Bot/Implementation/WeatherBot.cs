@@ -18,11 +18,11 @@ namespace BotLibrary.Implementation
         {
             _configuration = configuration;
         }
-        public string OnCommand(BotMessageDTO botMessageDTO)
+        public string OnCommand(MessageGetDTO messageGetDTO)
         {
             string api = GetApiKey();
 
-            string url = string.Format("http://api.openweathermap.org/data/2.5/weather?q={0}&units=metric&cnt=1&APPID={1}", botMessageDTO.Message, api);
+            string url = string.Format("http://api.openweathermap.org/data/2.5/weather?q={0}&units=metric&cnt=1&APPID={1}", messageGetDTO.Text, api);
             try
             {
                 JObject response = JObject.Parse(new System.Net.WebClient().DownloadString(url));

@@ -12,12 +12,12 @@ namespace BotLibrary.Implementation
         public ActionTypes AllowedActions => ActionTypes.UserAdded;
         public string Name => "Hi";
 
-        public string OnEvent(BotMessageDTO botMessageDTO, ActionTypes action)
+        public string OnEvent(MessageGetDTO messageGetDTO, ActionTypes action)
         {
             if (action == AllowedActions)
             {
-                if (String.IsNullOrEmpty(botMessageDTO.Login))
-                    return $"Hello {botMessageDTO.Login}";
+                if (!String.IsNullOrEmpty(messageGetDTO.User.Login))
+                    return $"Hello {messageGetDTO.User.Login}";
             }
             return null;
         }

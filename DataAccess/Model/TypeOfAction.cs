@@ -9,6 +9,6 @@ namespace DataAccess.Model
         public int Id { get; set; }
         public string Type { get; set; }
 
-        public List<ChatAction> ChatActions { get; set; }
+        public List<ChatEvent> ChatEvents { get; set; }
     }
 }

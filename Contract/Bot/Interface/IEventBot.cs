@@ -6,6 +6,6 @@ namespace Contract.Bot.Interface
     public interface IEventBot : IBot
     {
         ActionTypes AllowedActions { get; }
-        string OnEvent(BotMessageDTO botMessageDTO, ActionTypes action);
+        string OnEvent(MessageGetDTO messageGetDTO, ActionTypes action);
     }
 }

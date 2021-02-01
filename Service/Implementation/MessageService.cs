@@ -18,22 +18,13 @@ namespace Service.Implementation
         private readonly ChatNpgSQLContext _context;
         private readonly IMessageRepository _messageRepository;
         private readonly IMapper _mapper;
-        private readonly IBotManager _botManager;
-        private readonly IBotRepository _botRepository;
-        private readonly IChatActionRepository _chatActionRepository;
 
         public MessageService(ChatNpgSQLContext context, 
             IMessageRepository messageRepository, 
-            IMapper mapper,
-            IBotManager botManager,
-            IBotRepository botRepository,
-            IChatActionRepository chatActionRepository)
+            IMapper mapper)
         {
             _context = context;
             _messageRepository = messageRepository;
-            _botManager = botManager;
-            _botRepository = botRepository;
-            _chatActionRepository = chatActionRepository;
             _mapper = mapper;
         }
 
@@ -128,37 +119,6 @@ namespace Service.Implementation
             serviceResponse.Data = _mapper.Map<MessageGetDTO>(await _messageRepository.GetAsync(id));
 
             return serviceResponse;
-        }
-
-        public async Task<List<string>> GetBotsOnNewMessage(MessageGetDTO messageDTO)
-        {
-            List<string> responses = new List<string>();
-
-            string[] names = await _botRepository.GetBotsNamesByDialogIdAsync(messageDTO.DialogId);
-            BotMessageDTO botMessageDTO = new BotMessageDTO()
-            {
-                Login = messageDTO.User.Login,
-                Message = messageDTO.Text
-            };
-            foreach (var response in _botManager.BotOnEvent(names, ActionTypes.NewMessage, botMessageDTO))
-            {
-                if (!String.IsNullOrEmpty(response))
-                {
-                    ChatAction chatAction = new ChatAction()
-                    {
-                        DialogId = messageDTO.DialogId,
-                        UserId = messageDTO.UserId,
-                        BotResponse = response,
-                        TypeOfActionId = (int)ActionTypes.NewMessage,
-                        MessageId = messageDTO.Id
-                    };
-                    _chatActionRepository.Add(chatAction);
-                    await _context.SaveChangesAsync();
-                    responses.Add(response);
-                }
-            }
-
-            return responses;
-        }
+        } 
     }
 }

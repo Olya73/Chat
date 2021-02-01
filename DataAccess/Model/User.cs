@@ -11,6 +11,6 @@ namespace DataAccess.Model
 
         //public List<Message> Messages { get; set; }
         public List<UserDialog> UserDialogs { get; set; }
-        public List<ChatAction> ChatActions { get; set; }
+        public List<ChatEvent> ChatEvents{ get; set; }
     }
 }

@@ -16,17 +16,17 @@ namespace BotLibrary.Implementation
         public string Name => "Downloader";
         string pattern = @"^скачай\s(http(?:s)?://(?:[\w-]+(?:\.[\w-]+))+(?:/[\w-]+)+\.(?:jpg|mp3|mp4|pdf|doc))\s((?:\w)+)\z";
 
-        public string OnMessage(BotMessageDTO botMessageDTO)
+        public string OnMessage(MessageGetDTO messageGetDTO)
         {            
             RpcClient rpcClient = new RpcClient();
-            var s = rpcClient.Call(GetJson(botMessageDTO).ToString());
+            var s = rpcClient.Call(GetJson(messageGetDTO).ToString());
             rpcClient.Close();
             return s;
         }
 
-        protected JObject GetJson(BotMessageDTO botMessageDTO)
+        protected JObject GetJson(MessageGetDTO messageGetDTO)
         {
-            Match match = Regex.Match(botMessageDTO.Message, pattern);
+            Match match = Regex.Match(messageGetDTO.Text, pattern);
             if (match.Success)
             {
                 string url = match.Result("$1");
@@ -34,7 +34,7 @@ namespace BotLibrary.Implementation
                 JObject jObject = new JObject(
                     new JProperty(nameof(url), url),
                     new JProperty(nameof(folder), folder),
-                    new JProperty(nameof(botMessageDTO.Login), botMessageDTO.Login));
+                    new JProperty(nameof(messageGetDTO.User.Login), messageGetDTO.User.Login.ToLower()));
 
                 return jObject;
             }

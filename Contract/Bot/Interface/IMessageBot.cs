@@ -5,6 +5,6 @@ namespace Contract.Bot.Interface
 {
     public interface IMessageBot : IBot
     {
-        string OnMessage(BotMessageDTO botMessageDTO);
+        string OnMessage(MessageGetDTO messageGetDTO);
     }
 }
