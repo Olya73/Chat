@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Contract.Bot;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Contract.DTO
 {
-    public class ChatEventDTO
+    public class ChatEventAddDTO
     {
-        public int Id { get; set; }
-        public string TypeOfAction { get; set; }
+        public ActionTypes ActionType { get; set; }
         public int DialogId { get; set; }
         public int UserId { get; set; }
         public long? MessageId { get; set; }
-        public int State { get; set; }
     }
 }

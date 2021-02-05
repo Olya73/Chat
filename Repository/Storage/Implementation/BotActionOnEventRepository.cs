@@ -17,7 +17,7 @@ namespace Repository.Storage.Implementation
 
         public void Add(BotActionOnEvent obj)
         {
-            _context.ChatActions.Add(obj);
+            _context.BotActionOnEvents.Add(obj);
         }
     }
 }

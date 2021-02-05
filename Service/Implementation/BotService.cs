@@ -27,12 +27,14 @@ namespace Service.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Bot[]> GetAllWithTypeAsync()
+        public async Task<ServiceResponse<BotGetDTO[]>> GetAllWithTypeAsync()
         {
-            return await _botRepository.GetAllWithTypeAsync();
+            ServiceResponse<BotGetDTO[]> serviceResponse = new ServiceResponse<BotGetDTO[]>();
+            serviceResponse.Data = _mapper.Map<BotGetDTO[]>(await _botRepository.GetAllWithTypeAsync()); 
+            return serviceResponse;
         }
 
-        public async Task<ServiceResponse<string>> AddBotToDialog(BotDialogAddDTO botDialogDTO)
+        public async Task<ServiceResponse<string>> AddBotToDialogAsync(BotDialogAddDTO botDialogDTO)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
 
@@ -52,7 +54,7 @@ namespace Service.Implementation
             }
         }
 
-        public async Task<ServiceResponse<bool>> DeleteBotFromDialog(BotDialogAddDTO botDialogDTO)
+        public async Task<ServiceResponse<bool>> DeleteBotFromDialogAsync(BotDialogAddDTO botDialogDTO)
         {
             ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
 
@@ -70,6 +72,21 @@ namespace Service.Implementation
                 serviceResponse.Message = ex.Message;
                 return serviceResponse;
             }
+        }
+
+        public async Task<ServiceResponse<BotGetDTO>> GetBotAsync(string name)
+        {
+            ServiceResponse<BotGetDTO> serviceResponse = new ServiceResponse<BotGetDTO>();
+
+            Bot bot = await _botRepository.GetAsync(name);
+            if (bot != null)
+            {
+                serviceResponse.Data = _mapper.Map<BotGetDTO>(bot);
+                return serviceResponse;
+            }
+            serviceResponse.Success = false;
+            serviceResponse.Message = "Бот с таким именем/ид не найден";
+            return serviceResponse;
         }
     }
 }

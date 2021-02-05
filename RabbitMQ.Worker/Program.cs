@@ -19,7 +19,7 @@ namespace RabbitMQ.Worker
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
 
-            channel.QueueDeclare(queue: "rpc_queue", durable: true, exclusive: false, autoDelete: false, arguments: null);
+            channel.QueueDeclare(queue: "rpc", durable: false, exclusive: false, autoDelete: true, arguments: null);
             channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
 
             var consumer = new AsyncEventingBasicConsumer(channel);
@@ -34,12 +34,12 @@ namespace RabbitMQ.Worker
                 JObject json = JObject.Parse(message);
                 
                 string path = CreatePathAsync(json);
-                var url = json.SelectToken("url").ToString();
+                var uri = json.SelectToken("uri").ToString();
                 string response = null;
 
                 try
                 {
-                    await DownloadAsync(path, url);
+                    await DownloadAsync(path, uri);
                     response = "Файл успешно скачан на сервер";
                 }
                 catch (Exception ex)
@@ -56,7 +56,7 @@ namespace RabbitMQ.Worker
                       multiple: false);
                 }
             };
-            channel.BasicConsume(queue: "rpc_queue", autoAck: true, consumer: consumer);
+            channel.BasicConsume(queue: "rpc", autoAck: true, consumer: consumer);
             Console.WriteLine(" Press enter to shutdown.");
             Console.ReadLine();
         }

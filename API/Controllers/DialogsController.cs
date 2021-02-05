@@ -71,11 +71,12 @@ namespace API.Controllers
         [Route("{id:int}/users")]
         public async Task<IActionResult> Get(int id)
         {
-            ServiceResponse<UserGetDTO[]> serviceResponse = await _dialogService.GetUsersByDialogId(id);
+            ServiceResponse<UserGetDTO[]> serviceResponse = await _dialogService.GetUsersByDialogIdAsync(id);
             if (serviceResponse.Success == false)
             {
                 return BadRequest(serviceResponse.Message);
             }
+            
             return Ok(serviceResponse);
         }
     }

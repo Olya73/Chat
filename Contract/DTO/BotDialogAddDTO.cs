@@ -6,7 +6,7 @@ namespace Contract.DTO
 {
     public class BotDialogAddDTO
     {
-        public int BotId { get; set; }
+        public string BotName { get; set; }
         public int DialogId { get; set; }
     }
 }

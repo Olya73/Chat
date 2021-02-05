@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Service.Mapper
+namespace Service.AutoMapper
 {
     public class ChatProfile : Profile
     {
@@ -22,8 +22,11 @@ namespace Service.Mapper
                 .ForMember(map => map.UserId, map => map.MapFrom(c => c));
             CreateMap<DialogAddDTO, DialogGetDTO>();
             CreateMap<BotDialogAddDTO, BotDialog>();
-            CreateMap<ChatEventDTO, ChatEvent>()
-                .ForMember(map => map.TypeOfActionId, map => map.MapFrom(a => (int) Enum.Parse(typeof(ActionTypes), a.TypeOfAction)));
+            CreateMap<ChatEventAddDTO, ChatEvent>()
+                .ForMember(map => map.TypeOfActionId, map => map.MapFrom(a => (int) a.ActionType));
+            CreateMap<ChatEvent, ChatEventGetDTO>();
+            CreateMap<UserBotMessage, UserBotMessageDTO>();
+            CreateMap<Bot, BotGetDTO>();
         }
     }
 }

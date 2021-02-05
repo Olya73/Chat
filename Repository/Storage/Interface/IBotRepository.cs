@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Storage.Interface
 {
-    public interface IBotRepository
+    public interface IBotRepository: IRepository<Bot, string>
     {
         void AddBotToDialog(BotDialog botDialog);
         Task<Bot[]> GetAllWithTypeAsync();

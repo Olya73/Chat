@@ -1,9 +1,12 @@
-﻿using DataAccess.ConfigurationDatabase;
+﻿using Contract.Bot.Interface;
+using DataAccess.ConfigurationDatabase;
 using DataAccess.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Repository
 {
@@ -14,13 +17,13 @@ namespace Repository
         public DbSet<User> Users { get; set; }
         public DbSet<UserDialog> UserDialogs { get; set; }
         public DbSet<Bot> Bots { get; set; }
-        public DbSet<BotActionOnEvent> ChatActions { get; set; }
         public DbSet<BotDialog> BotDialogs { get; set; }
         public DbSet<ChatEvent> ChatEvents { get; set; }
+        public DbSet<BotActionOnEvent> BotActionOnEvents { get; set; }
 
         public ChatNpgSQLContext(DbContextOptions<ChatNpgSQLContext> options) : base(options)
         { }
-
+        protected ChatNpgSQLContext() { }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

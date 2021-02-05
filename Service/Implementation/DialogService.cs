@@ -18,14 +18,20 @@ namespace Service.Implementation
         private readonly ChatNpgSQLContext _context;
         private readonly IDialogRepository _dialogRepository;
         private readonly IMapper _mapper;
+        private readonly IChatEventRepository _chatEventRepository;
+        private readonly IBotNotifier _botNotifier;
 
         public DialogService(ChatNpgSQLContext context, 
             IDialogRepository dialogRepository, 
-            IMapper mapper)
+            IMapper mapper,
+            IChatEventRepository chatEventRepository,
+            IBotNotifier botNotifier)
         {
             _context = context;
             _dialogRepository = dialogRepository;
             _mapper = mapper;
+            _chatEventRepository = chatEventRepository;
+            _botNotifier = botNotifier;
         }
 
         public async Task<ServiceResponse<DialogGetDTO>> CreateDialogAsync(DialogAddDTO dialogDTO)
@@ -41,8 +47,7 @@ namespace Service.Implementation
                     return serviceResponse;
                 }
                 Dialog dialog = _mapper.Map<Dialog>(dialogDTO);
-                Dialog dialog1 = null;
-                _dialogRepository.Add(dialog1);
+                _dialogRepository.Add(dialog);
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<DialogGetDTO>(dialogDTO);
                 serviceResponse.Data.Id = dialog.Id;
@@ -78,12 +83,21 @@ namespace Service.Implementation
                 _dialogRepository.AddUserToDialog(userDialog);
                 await _context.SaveChangesAsync();
 
+                _chatEventRepository.Add(new ChatEvent() 
+                { 
+                    UserId = userDialogDTO.UserId, 
+                    DialogId = userDialogDTO.DialogId, 
+                    TypeOfActionId = (int) ActionTypes.UserAdded 
+                });
+                await _context.SaveChangesAsync();
+                _botNotifier.NotifyAsync();
+
                 serviceResponse.Data = userDialog.UserId;
             }
             catch(Exception ex)
             {
                 serviceResponse.Success = false;
-                serviceResponse.Message = ex.Message;
+                serviceResponse.Message = ex.Message + ex.InnerException;
                 return serviceResponse;
             }
 
@@ -112,6 +126,15 @@ namespace Service.Implementation
                 }                
                 _dialogRepository.DeleteUserFromDialog(userDialog);
                 await _context.SaveChangesAsync();
+
+                _chatEventRepository.Add(new ChatEvent()
+                {
+                    UserId = userDialogDTO.UserId,
+                    DialogId = userDialogDTO.DialogId,
+                    TypeOfActionId = (int)ActionTypes.UserDeleted
+                });
+                await _context.SaveChangesAsync();
+                _botNotifier.NotifyAsync();
 
                 serviceResponse.Data = true;
             }
@@ -145,12 +168,12 @@ namespace Service.Implementation
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<UserGetDTO[]>> GetUsersByDialogId(int id)
+        public async Task<ServiceResponse<UserGetDTO[]>> GetUsersByDialogIdAsync(int id)
         {
             ServiceResponse<UserGetDTO[]> serviceResponse = new ServiceResponse<UserGetDTO[]>();
 
             serviceResponse.Data = _mapper.Map<UserGetDTO[]>(await _dialogRepository.GetUsersByDialogIdAsync(id));
-
+                
             return serviceResponse;
         }
     }

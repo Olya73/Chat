@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BotLibrary;
 using BotLibrary.Implementation;
+using Contract.Bot;
 using Contract.Bot.Interface;
+using Contract.DTO;
+using DataAccess.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -43,8 +46,7 @@ namespace API
             {
                 options.UseNpgsql(Configuration.GetConnectionString("AspPostgreSQLContext"));
                 options.UseLoggerFactory(LoggerFactory.Create(buider => buider.AddConsole()));
-            }
-            );
+            });
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -57,7 +59,7 @@ namespace API
             services.AddScoped(typeof(IBotActionOnEventRepository), typeof(BotActionOnEventRepository));
             services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
             services.AddScoped(typeof(IChatEventRepository), typeof(ChatEventRepository));
-            services.AddScoped(typeof(IChatActionService), typeof(ChatActionService));
+            services.AddScoped(typeof(IBotNotifier), typeof(BotNotifier));
 
             services.AddSingleton<IBotManager>(BotLoader.Load);
         }
@@ -68,6 +70,7 @@ namespace API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                
             }
 
             app.UseHttpsRedirection();
@@ -80,6 +83,17 @@ namespace API
             {
                 endpoints.MapControllers();
             });
+        }
+    }
+    public class HiBot : IEventBot
+    {
+        public ActionTypes AllowedActions => throw new NotImplementedException();
+
+        public string Name => throw new NotImplementedException();
+
+        public string OnEvent(ChatEventGetDTO chatEventGetDTO, ActionTypes action)
+        {
+            throw new NotImplementedException();
         }
     }
 }

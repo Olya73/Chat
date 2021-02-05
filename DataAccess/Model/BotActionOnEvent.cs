@@ -10,6 +10,7 @@ namespace DataAccess.Model
         public int ChatEventId { get; set; }
         public string BotName { get; set; }
         public string BotResponse { get; set; }
+        public DateTime DateTime { get; set; }
 
         public ChatEvent ChatEvent { get; set; }
         public Bot Bot { get; set; }

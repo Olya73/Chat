@@ -18,7 +18,7 @@ namespace Repository.Storage.Implementation
             _context = context;
         }
 
-        public async Task<Bot[]> GetAllAsync()
+        public async Task<IEnumerable<Bot>> GetAllAsync()
         {
             return await _context.Bots.ToArrayAsync();
         }
@@ -26,10 +26,10 @@ namespace Repository.Storage.Implementation
         public async Task<Bot[]> GetAllWithTypeAsync()
         {
             return await _context.Bots
-                //.Include(b => b.BotTypes).ThenInclude(b => b.TypeOfBot)//
                 .Select(s =>
                 new Bot()
                 {
+
                     Name = s.Name,
                     Description = s.Description,
                     Implementation = s.Implementation,
@@ -39,13 +39,16 @@ namespace Repository.Storage.Implementation
                         TypeOfBot = v.TypeOfBot
                     })
 
-                })
+                }).AsNoTracking()
                 .ToArrayAsync();
         }
 
         public async Task<string[]> GetBotsNamesByDialogIdAsync(int dialogId)
         {
-            return await _context.Bots.SelectMany(b => b.BotDialogs).Where(d => d.DialogId == dialogId).Select(s => s.BotName).ToArrayAsync();
+            return await _context.Bots
+                .SelectMany(b => b.BotDialogs)
+                .Where(d => d.DialogId == dialogId)
+                .Select(s => s.Bot.Name).ToArrayAsync();
             //return await _context.Dialogs
             //    .Where(d => d.Id == dialogId)
             //    .SelectMany(d => d.BotDialogs)
@@ -60,6 +63,34 @@ namespace Repository.Storage.Implementation
         public void DeleteBotFromDialog(BotDialog botDialog)
         {
             _context.BotDialogs.Remove(botDialog);
+        }
+
+        public async Task<bool> DeleteAsync(string name)
+        {
+            var obj = await _context.Bots.SingleOrDefaultAsync(p => p.Name == name);
+            if (obj is null)
+            {
+                return false;
+            }
+            _context.Bots.Remove(obj);
+
+            return true;
+        }
+
+        public async Task<Bot> GetAsync(string name)
+        {
+            return await _context.Bots.SingleOrDefaultAsync(p => p.Name == name);
+        }
+
+        public void Add(Bot obj)
+        {
+            _context.Bots.Add(obj);
+        }
+
+        public Bot Update(Bot obj)
+        {
+            _context.Bots.Update(obj);
+            return obj;
         }
     }
 }

@@ -16,6 +16,10 @@ namespace DataAccess.ConfigurationDatabase
             entityBuilder.Property(d => d.BotName).HasColumnName("bot_name").IsRequired();
             entityBuilder.Property(d => d.BotResponse).HasColumnName("bot_response");
             entityBuilder.Property(d => d.ChatEventId).HasColumnName("chat_event_id");
+            entityBuilder.Property(d => d.DateTime)
+                .HasColumnName("datetime")
+                .HasColumnType("timestamptz")
+                .HasDefaultValueSql("now() at time zone 'utc'");
             entityBuilder.HasOne(d => d.ChatEvent).WithMany(e => e.BotActionOnEvents).OnDelete(DeleteBehavior.SetNull);
 
             entityBuilder.ToTable("bot_action_on_events");

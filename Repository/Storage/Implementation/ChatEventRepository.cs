@@ -1,9 +1,11 @@
 ﻿using DataAccess.Model;
+using Microsoft.EntityFrameworkCore;
 using Repository.Storage.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Repository.Storage.Implementation
 {
@@ -16,13 +18,16 @@ namespace Repository.Storage.Implementation
             _context = context;
         }
 
-        public ChatEvent FindNewAndUpdate()
+        public async Task<ChatEvent> FindNewAndUpdateAsync()
         {
-            var entity = _context.ChatEvents.FirstOrDefault(item => item.State == 0 || item.State == 3);
+            var entity = _context.ChatEvents
+                .Include(c => c.Message)
+                .Include(c => c.User)
+                .FirstOrDefault(item => item.State == 0 || item.State == 3); //
             if (entity != null)
             {
                 entity.State = 1;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             return entity;
         }

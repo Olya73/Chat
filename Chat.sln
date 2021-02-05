@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotLibrary", "Bot\BotLibrar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contract", "Contract\Contract.csproj", "{139FA7FB-E46E-4973-BB29-A0F58A07F830}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMQ.Worker", "RabbitMQ.Worker\RabbitMQ.Worker.csproj", "{2E203756-40B8-4DE4-B211-070BDE523C43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQ.Worker", "RabbitMQ.Worker\RabbitMQ.Worker.csproj", "{2E203756-40B8-4DE4-B211-070BDE523C43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.UnitTests", "Service.UnitTests\Service.UnitTests.csproj", "{71F08EB7-F5C1-4335-B44F-93BD739E5B51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{2E203756-40B8-4DE4-B211-070BDE523C43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E203756-40B8-4DE4-B211-070BDE523C43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E203756-40B8-4DE4-B211-070BDE523C43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71F08EB7-F5C1-4335-B44F-93BD739E5B51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71F08EB7-F5C1-4335-B44F-93BD739E5B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71F08EB7-F5C1-4335-B44F-93BD739E5B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71F08EB7-F5C1-4335-B44F-93BD739E5B51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

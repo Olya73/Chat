@@ -28,7 +28,7 @@ namespace BotLibrary.Implementation
             "кароч"
         };
 
-        public string OnEvent(MessageGetDTO messageGetDTO, ActionTypes action)
+        public string OnEvent(ChatEventGetDTO chatEventGetDTO, ActionTypes action)
         {
             if ((AllowedActions & action) == ActionTypes.UserAdded)
             {
@@ -45,12 +45,12 @@ namespace BotLibrary.Implementation
             return null;
         }
 
-        public string OnMessage(MessageGetDTO messageGetDTO)
+        public string OnMessage(ChatEventGetDTO chatEventGetDTO)
         {
             string pattern = @"((\w+\s\w+){" + new Random().Next(1, 4) + @"})\s";
             string replacement = "$1 " + _replacements[new Random().Next(_replacements.Length)] + " ";
 
-            return Regex.Replace(messageGetDTO.Text, pattern, replacement);
+            return Regex.Replace(chatEventGetDTO.Message.Text, pattern, replacement);
         }
     }
 }

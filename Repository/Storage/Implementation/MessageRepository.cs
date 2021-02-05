@@ -51,11 +51,33 @@ namespace Repository.Storage.Implementation
             return obj;
         }
 
-        public async Task<Message[]> GetMessagesByDialogIdAsync(int id, int limit, int offset)
+        public async Task<UserBotMessage[]> GetMessagesByDialogIdAsync(int id, int limit, int offset)
         {
-            var messages = await _context.Messages
+            var usersMessages = _context.Messages
                 .Where(m => m.UserDialog.DialogId == id)
-                .Include(s => s.UserDialog).ThenInclude(u => u.User)       
+                //.Include(s => s.UserDialog).ThenInclude(u => u.User)
+                .Select(s => new UserBotMessage() 
+                { 
+                    Id = s.Id,
+                    MemberId = s.UserDialog.UserId,
+                    MemberName = s.UserDialog.User.Login,
+                    MemberType = nameof(s.UserDialog.User),
+                    DateTime = s.DateTime,
+                    Text = s.Text 
+                });
+            var botsMessages = _context.BotActionOnEvents
+                .Where(a => a.ChatEvent.DialogId == id)
+                .Select(s => new UserBotMessage()
+                {
+                    Id = s.Id,
+                    MemberId = 0,
+                    MemberName = s.Bot.Name,
+                    MemberType = nameof(s.Bot),
+                    DateTime = s.DateTime,
+                    Text = s.BotResponse
+                });
+
+            var messages = await usersMessages.Union(botsMessages)
                 .OrderBy(d => d.DateTime)
                 .Skip(offset)
                 .Take(limit)

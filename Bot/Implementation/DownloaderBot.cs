@@ -1,8 +1,11 @@
 ﻿using Contract.Bot.Interface;
+using Contract.ConfigurationModel;
 using Contract.DTO;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Exceptions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,25 +19,31 @@ namespace BotLibrary.Implementation
         public string Name => "Downloader";
         string pattern = @"^скачай\s(http(?:s)?://(?:[\w-]+(?:\.[\w-]+))+(?:/[\w-]+)+\.(?:jpg|mp3|mp4|pdf|doc))\s((?:\w)+)\z";
 
-        public string OnMessage(MessageGetDTO messageGetDTO)
+        private readonly DownloaderBotSettings _settings;
+        public DownloaderBot(IOptions<DownloaderBotSettings> options)
+        {
+            _settings = options.Value;
+        }
+
+        public string OnMessage(ChatEventGetDTO chatEventGetDTO)
         {            
-            RpcClient rpcClient = new RpcClient();
-            var s = rpcClient.Call(GetJson(messageGetDTO).ToString());
+            RpcClient rpcClient = new RpcClient(_settings);
+            var s = rpcClient.Call(GetJson(chatEventGetDTO).ToString());
             rpcClient.Close();
             return s;
         }
 
-        protected JObject GetJson(MessageGetDTO messageGetDTO)
+        protected JObject GetJson(ChatEventGetDTO chatEventGetDTO)
         {
-            Match match = Regex.Match(messageGetDTO.Text, pattern);
+            Match match = Regex.Match(chatEventGetDTO.Message.Text, pattern);
             if (match.Success)
             {
-                string url = match.Result("$1");
+                string uri = match.Result("$1");
                 string folder = match.Result("$2");
                 JObject jObject = new JObject(
-                    new JProperty(nameof(url), url),
+                    new JProperty(nameof(uri), uri),
                     new JProperty(nameof(folder), folder),
-                    new JProperty(nameof(messageGetDTO.User.Login), messageGetDTO.User.Login.ToLower()));
+                    new JProperty(nameof(chatEventGetDTO.User.Login).ToLower(), chatEventGetDTO.User.Login));
 
                 return jObject;
             }
@@ -51,9 +60,16 @@ namespace BotLibrary.Implementation
         private readonly BlockingCollection<string> respQueue = new BlockingCollection<string>();
         private readonly IBasicProperties props;
 
-        public RpcClient()
+        public RpcClient(DownloaderBotSettings settings)
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var factory = new ConnectionFactory() 
+            { 
+                HostName = settings.RMQConnectionSettings.HostName,
+                Port = settings.RMQConnectionSettings.Port,
+                VirtualHost = settings.RMQConnectionSettings.VirtualHost,
+                UserName = settings.RMQConnectionSettings.UserName,
+                Password = settings.RMQConnectionSettings.Password
+            };
 
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
@@ -79,18 +95,26 @@ namespace BotLibrary.Implementation
         public string Call(string message)
         {
             var messageBytes = Encoding.UTF8.GetBytes(message);
-            channel.BasicPublish(
-                exchange: "",
-                routingKey: "rpc_queue",
-                basicProperties: props,
-                body: messageBytes);
+            try
+            {
+                channel.QueueDeclarePassive("rpc");
+                channel.BasicPublish(
+                    exchange: "",
+                    routingKey: "rpc",
+                    basicProperties: props,
+                    body: messageBytes);
 
-            channel.BasicConsume(
-                consumer: consumer,
-                queue: replyQueueName,
-                autoAck: true);
+                channel.BasicConsume(
+                    consumer: consumer,
+                    queue: replyQueueName,
+                    autoAck: true);
 
-            return respQueue.Take();
+                return respQueue.Take();
+            }
+            catch (OperationInterruptedException)
+            {
+                return "Сервер недоступен для скачивания";
+            }
         }
 
         public void Close()

@@ -7,7 +7,7 @@ namespace Contract.Bot.Interface
 {
     public interface ICommandBot : IBot
     {
-        string OnCommand(MessageGetDTO messageGetDTO);
+        string OnCommand(ChatEventGetDTO chatEventGetDTO);
         int CommandExists(string comm);
     }
 }

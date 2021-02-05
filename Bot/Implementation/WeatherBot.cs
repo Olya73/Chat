@@ -1,7 +1,9 @@
 ﻿using Contract.Bot;
 using Contract.Bot.Interface;
+using Contract.ConfigurationModel;
 using Contract.DTO;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -12,31 +14,27 @@ namespace BotLibrary.Implementation
     class WeatherBot : ICommandBot
     {
         public string Name => "Weather";
-        private readonly IConfiguration _configuration;
+        private readonly WeatherBotSettings _settings;
 
-        public WeatherBot(IConfiguration configuration)
+        public WeatherBot(IOptions<WeatherBotSettings> options)
         {
-            _configuration = configuration;
+            _settings = options.Value;
         }
-        public string OnCommand(MessageGetDTO messageGetDTO)
+        public string OnCommand(ChatEventGetDTO chatEventGetDTO)
         {
-            string api = GetApiKey();
+            string api = _settings.KeyApi;
+            string uri = _settings.Uri;
 
-            string url = string.Format("http://api.openweathermap.org/data/2.5/weather?q={0}&units=metric&cnt=1&APPID={1}", messageGetDTO.Text, api);
+            string address = string.Format(uri, chatEventGetDTO.Message.Text, api);
             try
             {
-                JObject response = JObject.Parse(new System.Net.WebClient().DownloadString(url));
+                JObject response = JObject.Parse(new System.Net.WebClient().DownloadString(address));
                 return CreateString(response);
             }            
             catch(Exception)
             {
                 return null;
             }            
-        }
-
-        protected string GetApiKey()
-        {
-            return _configuration[$"Bots:{Name}:keyApi"];
         }
 
         protected string CreateString(JObject response)

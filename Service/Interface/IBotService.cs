@@ -10,8 +10,9 @@ namespace Service.Interface
 {
     public interface IBotService
     {
-        Task<ServiceResponse<string>> AddBotToDialog(BotDialogAddDTO botDialogDTO);
-        Task<ServiceResponse<bool>> DeleteBotFromDialog(BotDialogAddDTO botDialogDTO);
-        Task<Bot[]> GetAllWithTypeAsync();
+        Task<ServiceResponse<string>> AddBotToDialogAsync(BotDialogAddDTO botDialogDTO);
+        Task<ServiceResponse<bool>> DeleteBotFromDialogAsync(BotDialogAddDTO botDialogDTO);
+        Task<ServiceResponse<BotGetDTO[]>> GetAllWithTypeAsync();
+        Task<ServiceResponse<BotGetDTO>> GetBotAsync(string name);
     }
 }

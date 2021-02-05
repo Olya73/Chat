@@ -13,7 +13,7 @@ namespace DataAccess.ConfigurationDatabase
         {
             entityBuilder.HasKey(b => new { b.DialogId, b.BotName });
             entityBuilder.Property(b => b.DialogId).HasColumnName("dialog_id");
-            entityBuilder.Property(b => b.BotName).HasColumnName("bot_id");
+            entityBuilder.Property(b => b.BotName).HasColumnName("bot_name");
 
             entityBuilder.HasOne(b => b.Bot)
                 .WithMany(b => b.BotDialogs)

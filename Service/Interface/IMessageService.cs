@@ -12,7 +12,7 @@ namespace Service.Interface
     {
         Task<ServiceResponse<MessageGetDTO>> CreateMessageAsync(MessageAddDTO messageDTO);
         Task<ServiceResponse<bool>> DeleteMessageAsync(MessageGetDTO message);
-        Task<ServiceResponse<MessageGetDTO[]>> GetMessagesByDialogId(int id, int limit = 50, int offset = 0);
+        Task<ServiceResponse<UserBotMessageDTO[]>> GetMessagesByDialogIdAsync(int id, int limit = 50, int offset = 0);
         Task<ServiceResponse<MessageGetDTO>> GetMessageAsync(long id);
     }
 }

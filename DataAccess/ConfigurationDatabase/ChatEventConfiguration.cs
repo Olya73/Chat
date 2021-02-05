@@ -15,6 +15,7 @@ namespace DataAccess.ConfigurationDatabase
             entityBuilder.Property(d => d.Id).HasColumnName("id").ValueGeneratedOnAdd();
             entityBuilder.Property(d => d.TypeOfActionId).HasColumnName("type_of_action_id").IsRequired();
             entityBuilder.Property(d => d.MessageId).HasColumnName("message_id");
+            entityBuilder.HasOne(d => d.Message).WithMany(e => e.ChatEvents).OnDelete(DeleteBehavior.SetNull);
             entityBuilder.Property(d => d.UserId).HasColumnName("user_id").IsRequired();
             entityBuilder.Property(d => d.DialogId).HasColumnName("dialog_id").IsRequired();
             entityBuilder.Property(d => d.State).HasColumnName("state").IsRequired().HasDefaultValue(0);

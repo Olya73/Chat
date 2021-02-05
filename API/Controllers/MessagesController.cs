@@ -48,7 +48,7 @@ namespace API.Controllers
         [Route("~/api/dialogs/{id:int}/messages")]
         public async Task<IActionResult> Get(int id, int limit = 50, int offset = 0)
         {
-            ServiceResponse<MessageGetDTO[]> serviceResponse = await _messageService.GetMessagesByDialogId(id, limit, offset);
+            ServiceResponse<UserBotMessageDTO[]> serviceResponse = await _messageService.GetMessagesByDialogIdAsync(id, limit, offset);
             if (serviceResponse.Success == false)
             {
                 return BadRequest(serviceResponse.Message);

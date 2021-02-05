@@ -18,14 +18,20 @@ namespace Service.Implementation
         private readonly ChatNpgSQLContext _context;
         private readonly IMessageRepository _messageRepository;
         private readonly IMapper _mapper;
+        private readonly IChatEventRepository _chatEventRepository;
+        private readonly IBotNotifier _botNotifier;
 
         public MessageService(ChatNpgSQLContext context, 
-            IMessageRepository messageRepository, 
-            IMapper mapper)
+            IMessageRepository messageRepository,
+            IChatEventRepository chatEventRepository,
+            IMapper mapper,
+            IBotNotifier botNotifier)
         {
             _context = context;
             _messageRepository = messageRepository;
             _mapper = mapper;
+            _chatEventRepository = chatEventRepository;
+            _botNotifier = botNotifier;
         }
 
         public async Task<ServiceResponse<MessageGetDTO>> CreateMessageAsync(MessageAddDTO messageDTO)
@@ -48,6 +54,16 @@ namespace Service.Implementation
                 };
                 _messageRepository.Add(message);
                 await _context.SaveChangesAsync();
+
+                _chatEventRepository.Add(new ChatEvent()
+                {
+                    UserId = messageDTO.UserId,
+                    DialogId = messageDTO.DialogId,
+                    TypeOfActionId = (int)ActionTypes.NewMessage,
+                    MessageId = message.Id
+                });
+                await _context.SaveChangesAsync();
+                _botNotifier.NotifyAsync();
 
                 serviceResponse.Data = _mapper.Map<MessageGetDTO>(messageDTO);
                 serviceResponse.Data.Id = message.Id;
@@ -74,7 +90,8 @@ namespace Service.Implementation
                     serviceResponse.Message = "Срок истек";
                     return serviceResponse;
                 }
-                if (!await _messageRepository.HasUserWithId(message.UserId, message.Id))
+                var b = await _messageRepository.HasUserWithId(message.UserId, message.Id);
+                if (!b)
                 {
                     serviceResponse.Success = false;
                     serviceResponse.Message = "Нет доступа";
@@ -83,6 +100,16 @@ namespace Service.Implementation
                 if (await _messageRepository.DeleteAsync(message.Id))
                 {
                     await _context.SaveChangesAsync();
+
+                    _chatEventRepository.Add(new ChatEvent()
+                    {
+                        UserId = message.UserId,
+                        DialogId = message.DialogId,
+                        TypeOfActionId = (int)ActionTypes.MessageDeleted
+                    });
+                    await _context.SaveChangesAsync();
+                    _botNotifier.NotifyAsync();
+
                     serviceResponse.Data = true;                    
                 }                    
                 else
@@ -95,19 +122,19 @@ namespace Service.Implementation
             catch (Exception ex)
             {
                 serviceResponse.Success = false;
-                serviceResponse.Message = ex.Message;
+                serviceResponse.Message = ex.Message + ex.InnerException;
                 return serviceResponse;
             }
 
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<MessageGetDTO[]>> GetMessagesByDialogId(int id, int limit = 50, int offset = 0)
+        public async Task<ServiceResponse<UserBotMessageDTO[]>> GetMessagesByDialogIdAsync(int id, int limit = 50, int offset = 0)
         {
-            ServiceResponse<MessageGetDTO[]> serviceResponse = new ServiceResponse<MessageGetDTO[]>();
+            ServiceResponse<UserBotMessageDTO[]> serviceResponse = new ServiceResponse<UserBotMessageDTO[]>();
 
-            IEnumerable<Message> messages = await _messageRepository.GetMessagesByDialogIdAsync(id, limit, offset);
-            serviceResponse.Data = _mapper.Map<MessageGetDTO[]>(messages);
+            IEnumerable<UserBotMessage> messages = await _messageRepository.GetMessagesByDialogIdAsync(id, limit, offset);
+            serviceResponse.Data = _mapper.Map<UserBotMessageDTO[]>(messages);
 
             return serviceResponse;
         }

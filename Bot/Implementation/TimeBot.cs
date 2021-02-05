@@ -13,16 +13,16 @@ namespace BotLibrary.Implementation
     {
         public string Name => "Time";
         public readonly string[] commandList = { 
-            "/now",
-            "/utc"
+            "now",
+            "utc"
         };
         public string[] CommandList => commandList;
         string pattern = @"^через\s([0-5]?\d|60)\z";
         string onCommandResponse = "Через {0} минут будет {1}:{2}.";
 
-        public string OnCommand(MessageGetDTO messageGetDTO)
+        public string OnCommand(ChatEventGetDTO chatEventGetDTO)
         {
-            int existing = CommandExists(messageGetDTO.Text);
+            int existing = CommandExists(chatEventGetDTO.Message.Text);
             switch (existing)
             { 
                 case 0 :
@@ -34,9 +34,9 @@ namespace BotLibrary.Implementation
             }
         }
 
-        public string OnMessage(MessageGetDTO messageGetDTO)
+        public string OnMessage(ChatEventGetDTO chatEventGetDTO)
         {
-            Match match = Regex.Match(messageGetDTO.Text, pattern);
+            Match match = Regex.Match(chatEventGetDTO.Message.Text, pattern);
             if (match.Success)
             {
                 int minutes = int.Parse(match.Result("$1"));

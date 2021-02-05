@@ -7,8 +7,8 @@ namespace Contract.Bot.Interface
 {
     public interface IBotManager
     {
-        IEnumerable<BotMessageDTO> BotOnCommand(MessageGetDTO messageGetDTO, string[] botNames);
-        IEnumerable<BotMessageDTO> BotOnEvent(MessageGetDTO messageGetDTO, string[] botNames, ActionTypes actionType);
-        IEnumerable<BotMessageDTO> BotOnMessage(MessageGetDTO messageGetDTO, string[] botNames);
+        IEnumerable<BotMessageDTO> BotOnCommand(ChatEventGetDTO chatEventGetDTO, string[] botNames);
+        IEnumerable<BotMessageDTO> BotOnEvent(ChatEventGetDTO chatEventGetDTO, string[] botNames, ActionTypes actionType);
+        IEnumerable<BotMessageDTO> BotOnMessage(ChatEventGetDTO chatEventGetDTO, string[] botNames);
     }
 }
